@@ -1,26 +1,82 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-
+import { Category } from './entities/category.entity';
+import { InjectModel } from '@nestjs/sequelize';
+import { HttpException } from '@nestjs/common/exceptions';
+import { HttpStatus } from '@nestjs/common/enums';
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(@InjectModel(Category) private readonly categoryRepo: typeof Category ){}
+
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    return await this.categoryRepo.create(createCategoryDto);
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll() {
+    const allCategories = await this.categoryRepo.findAll({include:{all:true}});
+    if(allCategories.length < 1) {
+      throw new HttpException(
+        'Categories not found! Database is empty',
+        HttpStatus.NOT_FOUND
+      )
+    };
+    return allCategories;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const oneCategory = await this.categoryRepo.findOne({
+      where:{
+        id: id
+      }
+    });
+    if(!oneCategory) {
+      throw new HttpException(
+        'ID is not correct! Information not found',
+        HttpStatus.NOT_FOUND
+      )
+    };
+    return oneCategory;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    const check = await this.categoryRepo.findOne({
+      where:{
+        id: id
+      }
+    });
+    if(!check){
+      throw new HttpException(
+        'ID is not correct ! Not updated',
+        HttpStatus.NOT_FOUND
+      )
+    };
+    await this.categoryRepo.update(updateCategoryDto,{
+      where:{
+        id: id
+      }
+    })
+    return true;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const check = await this.categoryRepo.findOne({
+      where:{
+        id: id
+      }
+    });
+    if(!check){
+      throw new HttpException(
+        'ID is not correct',
+        HttpStatus.NOT_FOUND
+      )
+    };
+    await this.categoryRepo.destroy({
+      where:{
+        id: id
+      }
+    })
+    return true;
   }
 }
