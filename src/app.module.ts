@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoryModule } from './category/category.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -20,7 +21,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
     autoLoadModels:true,
     logging:false
   }),
-  CategoryModule],
+  CategoryModule,
+  ProductModule],
   controllers: [AppController],
   providers: [AppService],
 })

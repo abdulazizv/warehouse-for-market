@@ -9,7 +9,6 @@ import { HttpStatus } from '@nestjs/common/enums';
 export class CategoryService {
   constructor(@InjectModel(Category) private readonly categoryRepo: typeof Category ){}
 
-
   async create(createCategoryDto: CreateCategoryDto) {
     return await this.categoryRepo.create(createCategoryDto);
   }
