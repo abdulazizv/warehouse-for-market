@@ -24,15 +24,36 @@ export class ProductService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const oneProduct = await this.productRepo.findByPk(id);
+    if(!oneProduct){
+      throw new HttpException(
+        'Id is not correct',
+        HttpStatus.NOT_FOUND
+      )
+    } else {
+      return oneProduct;
+    }
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const updatedOne = await this.productRepo.update(updateProductDto,{
+      where:{
+        id: id
+      }
+    })
+    return updatedOne;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    await this.productRepo.destroy({
+      where:{
+        id:id
+      }
+    });
+    return {
+      response:true,
+      deletedId:id
+    }
   }
 }

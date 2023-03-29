@@ -3,6 +3,7 @@ import { DataType,Model,Table,Column,ForeignKey,BelongsTo } from "sequelize-type
 import { Category } from "../../category/entities/category.entity";
 
 interface productAttrs {
+    id:number;
     name:string;
     amount:number;
     price:number;
