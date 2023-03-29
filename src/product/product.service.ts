@@ -1,15 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(@InjectModel(Product) private productRepo:typeof Product){} 
+  async create(createProductDto: CreateProductDto) {
+    const newProduct = await this.productRepo.create(createProductDto);
+    return newProduct;
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll() {
+    const allProducts = await this.productRepo.findAll({include:{all:true}})
+    if(allProducts.length >= 1){
+      return allProducts;
+    } else {
+      throw new HttpException(
+        'Information not found, Database is empty',
+        HttpStatus.NO_CONTENT
+      )
+    }
   }
 
   findOne(id: number) {
