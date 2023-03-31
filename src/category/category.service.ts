@@ -59,6 +59,10 @@ export class CategoryService {
     return true;
   }
 
+
+  async searchOneCategory(id:number){
+    return await this.categoryRepo.findByPk(id);
+  }
   async remove(id: number) {
     const check = await this.categoryRepo.findOne({
       where:{
