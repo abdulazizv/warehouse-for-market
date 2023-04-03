@@ -10,6 +10,7 @@ interface productAttrs {
 }
 
 export class Product extends Model<productAttrs,Product> {
+
     @Column({
         type:DataType.INTEGER,
         unique:true,
